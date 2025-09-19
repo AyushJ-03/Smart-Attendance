@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance - Rural Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--secondary-color);
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .attendance-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+
+        .attendance-controls {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-row {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .student-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .student-row:last-child {
+            border-bottom: none;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary-color), var(--success-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .student-details h6 {
+            margin-bottom: 0.25rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .student-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .attendance-options {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-attendance {
+            border: 2px solid;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-present {
+            color: var(--success-color);
+            border-color: var(--success-color);
+            background: white;
+        }
+
+        .btn-present.active,
+        .btn-present:hover {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-absent {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            background: white;
+        }
+
+        .btn-absent.active,
+        .btn-absent:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-late {
+            color: var(--warning-color);
+            border-color: var(--warning-color);
+            background: white;
+        }
+
+        .btn-late.active,
+        .btn-late:hover {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .stats-row {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .present-stat { color: var(--success-color); }
+        .absent-stat { color: var(--danger-color); }
+        .late-stat { color: var(--warning-color); }
+        .total-stat { color: var(--primary-color); }
+
+        .submit-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--success-color), #2ecc71);
+            border: none;
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            border-radius: 25px;
+            padding-left: 3rem;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .student-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .attendance-options {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .btn-attendance {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/teacher/dashboard">
+                <i class="fas fa-graduation-cap me-2"></i>
+                Rural Attendance System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teacher/dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teacher/students">
+                            <i class="fas fa-users me-1"></i>Students
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/teacher/mark-attendance">
+                            <i class="fas fa-check-circle me-1"></i>Mark Attendance
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teacher/attendance">
+                            <i class="fas fa-calendar-check me-1"></i>View Attendance
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i><%= user.name %>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/auth/logout">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">
+                        <i class="fas fa-check-circle me-3"></i>Mark Attendance
+                    </h1>
+                    <p class="page-subtitle">
+                        Mark attendance for <%= new Date().toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        }) %>
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex align-items-center justify-content-end gap-3">
+                        <div class="text-center">
+                            <div class="h4 mb-0 text-primary" id="currentTime"></div>
+                            <small class="text-muted">Current Time</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="stats-row">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number total-stat" id="totalStudents"><%= students.length %></div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number present-stat" id="presentCount">0</div>
+                        <div class="stat-label">Present</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number absent-stat" id="absentCount">0</div>
+                        <div class="stat-label">Absent</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <div class="stat-number late-stat" id="lateCount">0</div>
+                        <div class="stat-label">Late</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Form -->
+        <div class="attendance-card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="mb-0">
+                            <i class="fas fa-list-check me-2"></i>Student Attendance
+                        </h4>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="form-control" id="searchStudent" placeholder="Search students...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-controls">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="markAllAs('present')">
+                                <i class="fas fa-check-double me-1"></i>Mark All Present
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="markAllAs('absent')">
+                                <i class="fas fa-times-circle me-1"></i>Mark All Absent
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Click on status buttons to mark attendance
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" action="/teacher/mark-attendance" id="attendanceForm">
+                <div id="studentsList">
+                    <% students.forEach(function(student, index) { %>
+                        <div class="student-row" data-student-name="<%= student.name.toLowerCase() %>" data-roll="<%= student.rollNumber.toLowerCase() %>">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="student-info">
+                                        <div class="student-avatar">
+                                            <%= student.name.charAt(0).toUpperCase() %>
+                                        </div>
+                                        <div class="student-details">
+                                            <h6><%= student.name %></h6>
+                                            <div class="student-meta">
+                                                <span class="me-3">
+                                                    <i class="fas fa-id-badge me-1"></i>
+                                                    Roll: <%= student.rollNumber %>
+                                                </span>
+                                                <span class="me-3">
+                                                    <i class="fas fa-graduation-cap me-1"></i>
+                                                    Class: <%= student.class %>-<%= student.section %>
+                                                </span>
+                                                <% if (student.rfidTagId) { %>
+                                                <span>
+                                                    <i class="fas fa-credit-card me-1"></i>
+                                                    RFID: <%= student.rfidTagId %>
+                                                </span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="attendance-options">
+                                        <input type="hidden" name="attendance[<%= student._id %>]" value="<%= attendanceMap[student._id] || 'absent' %>" id="status_<%= student._id %>">
+                                        
+                                        <button type="button" 
+                                                class="btn-attendance btn-present <%= attendanceMap[student._id] === 'present' ? 'active' : '' %>" 
+                                                onclick="setAttendance('<%= student._id %>', 'present')">
+                                            <i class="fas fa-check me-1"></i>Present
+                                        </button>
+                                        
+                                        <button type="button" 
+                                                class="btn-attendance btn-absent <%= attendanceMap[student._id] === 'absent' || !attendanceMap[student._id] ? 'active' : '' %>" 
+                                                onclick="setAttendance('<%= student._id %>', 'absent')">
+                                            <i class="fas fa-times me-1"></i>Absent
+                                        </button>
+                                        
+                                        <button type="button" 
+                                                class="btn-attendance btn-late <%= attendanceMap[student._id] === 'late' ? 'active' : '' %>" 
+                                                onclick="setAttendance('<%= student._id %>', 'late')">
+                                            <i class="fas fa-clock me-1"></i>Late
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </form>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">Ready to submit attendance?</h5>
+                    <p class="text-muted mb-0">
+                        Please review all student attendance before submitting. 
+                        This action will save attendance for today's date.
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="submit" form="attendanceForm" class="btn-submit">
+                        <i class="fas fa-save me-2"></i>
+                        Submit Attendance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Set attendance status
+        function setAttendance(studentId, status) {
+            // Update hidden input
+            document.getElementById('status_' + studentId).value = status;
+            
+            // Update button states
+            const studentRow = document.querySelector(`input[name="attendance[${studentId}]"]`).closest('.student-row');
+            const buttons = studentRow.querySelectorAll('.btn-attendance');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            studentRow.querySelector(`.btn-${status}`).classList.add('active');
+            
+            // Update statistics
+            updateStats();
+        }
+
+        // Mark all students with specific status
+        function markAllAs(status) {
+            const students = document.querySelectorAll('[id^="status_"]');
+            students.forEach(input => {
+                const studentId = input.id.replace('status_', '');
+                setAttendance(studentId, status);
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            const statuses = Array.from(document.querySelectorAll('[id^="status_"]')).map(input => input.value);
+            
+            const presentCount = statuses.filter(s => s === 'present').length;
+            const absentCount = statuses.filter(s => s === 'absent').length;
+            const lateCount = statuses.filter(s => s === 'late').length;
+            
+            document.getElementById('presentCount').textContent = presentCount;
+            document.getElementById('absentCount').textContent = absentCount;
+            document.getElementById('lateCount').textContent = lateCount;
+        }
+
+        // Search functionality
+        document.getElementById('searchStudent').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const studentRows = document.querySelectorAll('.student-row');
+            
+            studentRows.forEach(row => {
+                const studentName = row.dataset.studentName;
+                const rollNumber = row.dataset.roll;
+                
+                if (studentName.includes(searchTerm) || rollNumber.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Form submission confirmation
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            const unmarkedStudents = Array.from(document.querySelectorAll('[id^="status_"]'))
+                .filter(input => !input.value || input.value === '');
+            
+            if (unmarkedStudents.length > 0) {
+                if (!confirm(`${unmarkedStudents.length} students have no attendance marked. Continue?`)) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
+            // Show loading state
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            submitBtn.disabled = true;
+        });
+
+        // Initialize stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+        });
+    </script>
+</body>
+</html>

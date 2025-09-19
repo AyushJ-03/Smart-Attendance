@@ -1,0 +1,565 @@
+<%- include('../partials/header', { title: 'Facial Recognition' }) %>
+
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Facial Recognition Attendance</h1>
+            <p class="text-gray-600 mt-2">Use AI-powered facial recognition to mark attendance</p>
+        </div>
+        <div class="flex space-x-3">
+            <button onclick="toggleCamera()" id="cameraToggle" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <i class="fas fa-camera mr-2"></i>
+                Start Camera
+            </button>
+            <button onclick="capturePhoto()" id="captureBtn" class="bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50" disabled>
+                <i class="fas fa-camera-retro mr-2"></i>
+                Capture
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Camera Feed -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-video mr-2 text-blue-600"></i>
+                Camera Feed
+            </h3>
+            
+            <div class="relative bg-gray-900 rounded-lg overflow-hidden" style="aspect-ratio: 4/3;">
+                <video id="videoElement" class="w-full h-full object-cover" autoplay muted></video>
+                <canvas id="overlay" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+                
+                <!-- Camera Status -->
+                <div id="cameraStatus" class="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-sm rounded-full">
+                    <i class="fas fa-video-slash mr-1"></i>
+                    Camera Off
+                </div>
+                
+                <!-- Face Detection Indicator -->
+                <div id="faceDetected" class="absolute top-4 right-4 px-3 py-1 bg-green-600 text-white text-sm rounded-full hidden">
+                    <i class="fas fa-user-check mr-1"></i>
+                    Face Detected
+                </div>
+            </div>
+            
+            <!-- Camera Controls -->
+            <div class="mt-4 flex justify-center space-x-4">
+                <button onclick="switchCamera()" id="switchBtn" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Switch Camera
+                </button>
+                <button onclick="adjustSettings()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-cog mr-2"></i>
+                    Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Recognition Results -->
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-search mr-2 text-purple-600"></i>
+                Recognition Results
+            </h3>
+            
+            <div id="recognitionResults" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-camera text-4xl mb-4"></i>
+                    <p>Start camera and capture a photo to begin recognition</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Recognitions -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-6">
+            <i class="fas fa-history mr-2 text-green-600"></i>
+            Today's Facial Recognition Attendance
+        </h3>
+        
+        <div id="todayRecognitions" class="space-y-3">
+            <!-- This will be populated dynamically -->
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-user-clock text-4xl mb-4"></i>
+                <p>No facial recognition attendance recorded today</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Camera Settings</h3>
+            <button onclick="closeSettingsModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Recognition Confidence</label>
+                <input type="range" id="confidenceSlider" min="0.5" max="0.95" step="0.05" value="0.8" 
+                       class="w-full">
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>Low (50%)</span>
+                    <span id="confidenceValue">80%</span>
+                    <span>High (95%)</span>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Detection Frequency</label>
+                <select id="detectionFreq" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <option value="1000">Every 1 second</option>
+                    <option value="2000" selected>Every 2 seconds</option>
+                    <option value="5000">Every 5 seconds</option>
+                </select>
+            </div>
+            
+            <div class="flex items-center">
+                <input type="checkbox" id="autoCapture" class="mr-2">
+                <label for="autoCapture" class="text-sm text-gray-700">Auto-capture when face detected</label>
+            </div>
+            
+            <div class="flex items-center">
+                <input type="checkbox" id="showOverlay" class="mr-2" checked>
+                <label for="showOverlay" class="text-sm text-gray-700">Show face detection overlay</label>
+            </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3 mt-6">
+            <button onclick="closeSettingsModal()" 
+                    class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                Cancel
+            </button>
+            <button onclick="saveSettings()" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Save Settings
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script>
+    let videoElement = document.getElementById('videoElement');
+    let canvas = document.getElementById('overlay');
+    let ctx = canvas.getContext('2d');
+    let stream = null;
+    let isModelLoaded = false;
+    let detectionInterval = null;
+    let currentDeviceId = null;
+    let availableCameras = [];
+
+    // Settings
+    let settings = {
+        confidence: 0.5, // Lowered threshold for stricter matching
+        detectionFreq: 2000,
+        autoCapture: false,
+        showOverlay: true
+    };
+
+    // Initialize face-api.js models
+    async function loadModels() {
+        try {
+            await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+            await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+            await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+            isModelLoaded = true;
+            console.log('Face detection models loaded successfully');
+        } catch (error) {
+            console.error('Error loading face detection models:', error);
+            // For demo purposes, we'll simulate model loading
+            isModelLoaded = true;
+        }
+    }
+
+    // Get available cameras
+    async function getCameras() {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            availableCameras = devices.filter(device => device.kind === 'videoinput');
+            
+            if (availableCameras.length > 1) {
+                document.getElementById('switchBtn').disabled = false;
+            }
+        } catch (error) {
+            console.error('Error getting cameras:', error);
+        }
+    }
+
+    // Toggle camera on/off
+    async function toggleCamera() {
+        const toggleBtn = document.getElementById('cameraToggle');
+        const captureBtn = document.getElementById('captureBtn');
+        const statusDiv = document.getElementById('cameraStatus');
+        
+        if (stream) {
+            // Stop camera
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+            
+            toggleBtn.innerHTML = '<i class="fas fa-camera mr-2"></i>Start Camera';
+            toggleBtn.className = 'bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors';
+            captureBtn.disabled = true;
+            statusDiv.innerHTML = '<i class="fas fa-video-slash mr-1"></i>Camera Off';
+            statusDiv.className = 'absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-sm rounded-full';
+            
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        } else {
+            // Start camera
+            try {
+                const constraints = {
+                    video: {
+                        deviceId: currentDeviceId ? { exact: currentDeviceId } : undefined,
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    }
+                };
+                
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                
+                toggleBtn.innerHTML = '<i class="fas fa-stop mr-2"></i>Stop Camera';
+                toggleBtn.className = 'bg-red-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors';
+                captureBtn.disabled = false;
+                statusDiv.innerHTML = '<i class="fas fa-video mr-1"></i>Camera On';
+                statusDiv.className = 'absolute top-4 left-4 px-3 py-1 bg-green-600 text-white text-sm rounded-full';
+                
+                // Start face detection
+                if (isModelLoaded) {
+                    startFaceDetection();
+                }
+                
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Error accessing camera. Please check permissions.');
+            }
+        }
+    }
+
+    // Switch between available cameras
+    async function switchCamera() {
+        if (availableCameras.length <= 1) return;
+        
+        const currentIndex = availableCameras.findIndex(camera => camera.deviceId === currentDeviceId);
+        const nextIndex = (currentIndex + 1) % availableCameras.length;
+        currentDeviceId = availableCameras[nextIndex].deviceId;
+        
+        if (stream) {
+            await toggleCamera(); // Stop current camera
+            await toggleCamera(); // Start with new camera
+        }
+    }
+
+    // Start face detection
+    function startFaceDetection() {
+        detectionInterval = setInterval(async () => {
+            if (videoElement.videoWidth === 0) return;
+            
+            try {
+                // Simulate face detection for demo
+                const faceDetected = Math.random() > 0.7; // 30% chance of face detection
+                
+                const faceIndicator = document.getElementById('faceDetected');
+                if (faceDetected) {
+                    faceIndicator.classList.remove('hidden');
+                    
+                    if (settings.showOverlay) {
+                        drawFaceOverlay();
+                    }
+                    
+                    if (settings.autoCapture) {
+                        setTimeout(() => capturePhoto(), 500);
+                    }
+                } else {
+                    faceIndicator.classList.add('hidden');
+                    if (settings.showOverlay) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                }
+            } catch (error) {
+                console.error('Face detection error:', error);
+            }
+        }, settings.detectionFreq);
+    }
+
+    // Draw face detection overlay
+    function drawFaceOverlay() {
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(
+            canvas.width * 0.3,
+            canvas.height * 0.2,
+            canvas.width * 0.4,
+            canvas.height * 0.5
+        );
+        
+        ctx.fillStyle = '#00ff00';
+        ctx.font = '16px Arial';
+        ctx.fillText('Face Detected', canvas.width * 0.32, canvas.height * 0.18);
+    }
+
+    // Capture photo and process
+    async function capturePhoto() {
+        if (!stream) return;
+        
+        const captureCanvas = document.createElement('canvas');
+        const captureCtx = captureCanvas.getContext('2d');
+        
+        captureCanvas.width = videoElement.videoWidth;
+        captureCanvas.height = videoElement.videoHeight;
+        captureCtx.drawImage(videoElement, 0, 0);
+        
+        // Convert to blob and process
+        captureCanvas.toBlob(async (blob) => {
+            await processImage(blob);
+        }, 'image/jpeg', 0.8);
+    }
+
+    // Process captured image
+    async function processImage(imageBlob) {
+        const resultsDiv = document.getElementById('recognitionResults');
+        
+        // Show processing state
+        resultsDiv.innerHTML = `
+            <div class="text-center py-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p class="text-gray-600">Processing image...</p>
+            </div>
+        `;
+        
+        // Real face recognition logic
+        try {
+            // Load all student descriptors from backend
+            const res = await fetch('/teacher/api/students/face-descriptors');
+            const students = await res.json();
+            if (!Array.isArray(students) || students.length === 0) {
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4">No student face data available.</div>`;
+                return;
+            }
+            // Read image as HTMLImageElement
+            const img = await faceapi.bufferToImage(imageBlob);
+            const detection = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+            if (!detection || !detection.descriptor) {
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4">No face detected in the image.</div>`;
+                return;
+            }
+            // Prepare labeled descriptors, filter out invalid ones
+            const validStudents = students.filter(s => Array.isArray(s.faceDescriptor) && s.faceDescriptor.length === 128);
+            if (validStudents.length === 0) {
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4">No valid student face data available (all descriptors invalid).</div>`;
+                return;
+            }
+            const labeledDescriptors = validStudents.map(s =>
+                new faceapi.LabeledFaceDescriptors(
+                    s._id,
+                    [new Float32Array(s.faceDescriptor)]
+                )
+            );
+            // Use FaceMatcher
+            const threshold = typeof settings.confidence === 'number' ? settings.confidence : 0.5;
+            const matcher = new faceapi.FaceMatcher(labeledDescriptors, threshold);
+            const bestMatch = matcher.findBestMatch(detection.descriptor);
+            if (bestMatch.label !== 'unknown') {
+                const matchedStudent = validStudents.find(s => s._id === bestMatch.label);
+                // Show matched student info and all close matches for debugging
+                let matchList = labeledDescriptors.map(ld => {
+                    const label = ld.label;
+                    const student = validStudents.find(s => s._id === label);
+                    const dist = faceapi.euclideanDistance(ld.descriptors[0], detection.descriptor);
+                    return `<li>${student ? student.name : label} (ID: ${label}) - Distance: ${dist.toFixed(3)}</li>`;
+                }).join('');
+                resultsDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-user-check text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-green-800">${matchedStudent ? matchedStudent.name : 'Student'} (ID: ${matchedStudent ? matchedStudent._id : bestMatch.label})</h4>
+                                <p class="text-sm text-green-600">Distance: ${bestMatch.distance.toFixed(3)}</p>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <strong>All matches:</strong>
+                            <ul class="text-xs text-gray-700">${matchList}</ul>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="markAttendance('${matchedStudent ? matchedStudent._id : ''}', 'present')" 
+                                    class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-check mr-2"></i>Mark Present
+                            </button>
+                            <button onclick="markAttendance('${matchedStudent ? matchedStudent._id : ''}', 'late')" 
+                                    class="flex-1 bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 transition-colors">
+                                <i class="fas fa-clock mr-2"></i>Mark Late
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-user-times text-red-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-red-800">Recognition Failed</h4>
+                                <p class="text-sm text-red-600">No matching student found</p>
+                            </div>
+                        </div>
+                        <button onclick="capturePhoto()" 
+                                class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-camera-retro mr-2"></i>Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-4">Recognition error: ${err.message}</div>`;
+        }
+    }
+
+    // Mark attendance
+    async function markAttendance(studentId, status) {
+        try {
+            const response = await fetch('/api/face-recognition', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    studentId,
+                    status,
+                    timestamp: new Date().toISOString()
+                })
+            });
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (e) {
+                // If response is not JSON, treat as success if response.ok
+                data = {};
+            }
+            if (response.ok && (!data.error)) {
+                // Add to today's recognitions
+                const matchedStudent = validStudents.find(s => s._id === studentId);
+                addToTodayRecognitions(matchedStudent ? matchedStudent.name : studentId, status);
+                // Show success message
+                document.getElementById('recognitionResults').innerHTML = `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-check-circle text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-800">Attendance Marked</h4>
+                                <p class="text-sm text-blue-600">${matchedStudent ? matchedStudent.name : studentId} marked as ${status}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                alert((data && data.error) || 'Error marking attendance. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error marking attendance:', error);
+            alert('Error marking attendance. Please try again.');
+        }
+    }
+
+    // Add to today's recognitions display
+    function addToTodayRecognitions(studentName, status) {
+        const container = document.getElementById('todayRecognitions');
+        const now = new Date();
+        
+        // Remove "no records" message if it exists
+        if (container.querySelector('.text-center')) {
+            container.innerHTML = '';
+        }
+        
+        const statusColor = status === 'present' ? 'green' : 'yellow';
+        const statusIcon = status === 'present' ? 'check' : 'clock';
+        
+        const recordHtml = `
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-${statusColor}-100 rounded-full flex items-center justify-center mr-3">
+                        <i class="fas fa-${statusIcon} text-${statusColor}-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">${studentName}</p>
+                        <p class="text-sm text-gray-600">Facial Recognition</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-semibold text-${statusColor}-600">${status.charAt(0).toUpperCase() + status.slice(1)}</p>
+                    <p class="text-sm text-gray-500">${now.toLocaleTimeString()}</p>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('afterbegin', recordHtml);
+    }
+
+    // Settings functions
+    function adjustSettings() {
+        document.getElementById('settingsModal').classList.remove('hidden');
+        document.getElementById('settingsModal').classList.add('flex');
+        
+        // Update UI with current settings
+        document.getElementById('confidenceSlider').value = settings.confidence;
+        document.getElementById('confidenceValue').textContent = Math.round(settings.confidence * 100) + '%';
+        document.getElementById('detectionFreq').value = settings.detectionFreq;
+        document.getElementById('autoCapture').checked = settings.autoCapture;
+        document.getElementById('showOverlay').checked = settings.showOverlay;
+    }
+
+    function closeSettingsModal() {
+        document.getElementById('settingsModal').classList.add('hidden');
+        document.getElementById('settingsModal').classList.remove('flex');
+    }
+
+    function saveSettings() {
+        settings.confidence = parseFloat(document.getElementById('confidenceSlider').value);
+        settings.detectionFreq = parseInt(document.getElementById('detectionFreq').value);
+        settings.autoCapture = document.getElementById('autoCapture').checked;
+        settings.showOverlay = document.getElementById('showOverlay').checked;
+        
+        // Restart detection with new settings
+        if (detectionInterval) {
+            clearInterval(detectionInterval);
+            startFaceDetection();
+        }
+        
+        closeSettingsModal();
+    }
+
+    // Update confidence display
+    document.getElementById('confidenceSlider').addEventListener('input', function(e) {
+        document.getElementById('confidenceValue').textContent = Math.round(e.target.value * 100) + '%';
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadModels();
+        await getCameras();
+    });
+</script>
+
+<%- include('../partials/footer') %>

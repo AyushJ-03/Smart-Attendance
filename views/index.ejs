@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural School Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-16">
+        <div class="text-center mb-16">
+            <div class="mb-8">
+                <i class="fas fa-graduation-cap text-6xl text-indigo-600 mb-4"></i>
+            </div>
+            <h1 class="text-5xl font-bold text-gray-800 mb-6">Rural School Attendance System</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Modern technology meets rural education. Track attendance, predict dropouts, and ensure every child's educational journey is monitored and supported.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow">
+                <div class="text-center">
+                    <i class="fas fa-chalkboard-teacher text-4xl text-blue-600 mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Teacher Portal</h2>
+                    <p class="text-gray-600 mb-6">
+                        Manage your classroom, track student attendance, and identify at-risk students with advanced analytics.
+                    </p>
+                    <a href="/auth/login" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Teacher Login
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow">
+                <div class="text-center">
+                    <i class="fas fa-chart-line text-4xl text-green-600 mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Government Portal</h2>
+                    <p class="text-gray-600 mb-6">
+                        Monitor district-wide attendance patterns, analyze dropout trends, and make data-driven policy decisions.
+                    </p>
+                    <a href="/auth/login" class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Government Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100 max-w-6xl mx-auto">
+            <h3 class="text-3xl font-bold text-gray-800 mb-8 text-center">System Features</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-id-card text-blue-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">RFID Integration</h4>
+                    <p class="text-gray-600">Automatic attendance tracking using RFID tags for seamless check-ins.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-camera text-purple-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Facial Recognition</h4>
+                    <p class="text-gray-600">Advanced AI-powered facial recognition for backup attendance marking.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Dropout Prediction</h4>
+                    <p class="text-gray-600">Machine learning algorithms to identify students at risk of dropping out.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-bar text-green-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Analytics Dashboard</h4>
+                    <p class="text-gray-600">Comprehensive analytics and reports for informed decision making.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-bell text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Parent Notifications</h4>
+                    <p class="text-gray-600">Automated alerts to parents about attendance and academic concerns.</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-map-marked-alt text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800 mb-2">Geographic Heat Maps</h4>
+                    <p class="text-gray-600">Visual representation of attendance and dropout patterns across regions.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-16">
+            <p class="text-gray-600 mb-4">Don't have an account?</p>
+            <a href="/auth/register" class="inline-flex items-center px-6 py-3 bg-gray-800 text-white font-semibold rounded-lg hover:bg-gray-900 transition-colors">
+                <i class="fas fa-user-plus mr-2"></i>
+                Register Now
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,253 @@
+<%- include('../partials/header', { title: 'Add Student' }) %>
+
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Add New Student</h1>
+            <p class="text-gray-600 mt-2">Register a new student in the system</p>
+        </div>
+        <a href="/teacher/students" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Students
+        </a>
+    </div>
+
+    <!-- Add Student Form -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-8">
+        <% if (error) { %>
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <%= error %>
+            </div>
+        <% } %>
+
+    <form method="POST" action="/teacher/students/add" class="space-y-6" id="addStudentForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Basic Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                        <i class="fas fa-user mr-2 text-blue-600"></i>
+                        Basic Information
+                    </h3>
+                </div>
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="Enter student's full name">
+                </div>
+
+                <div>
+                    <label for="rollNumber" class="block text-sm font-medium text-gray-700 mb-2">Roll Number *</label>
+                    <input type="text" id="rollNumber" name="rollNumber" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="Enter roll number">
+                </div>
+
+                <div>
+                    <label for="class" class="block text-sm font-medium text-gray-700 mb-2">Class *</label>
+                    <select id="class" name="class" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Select Class</option>
+                        <option value="1">Class 1</option>
+                        <option value="2">Class 2</option>
+                        <option value="3">Class 3</option>
+                        <option value="4">Class 4</option>
+                        <option value="5">Class 5</option>
+                        <option value="6">Class 6</option>
+                        <option value="7">Class 7</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="section" class="block text-sm font-medium text-gray-700 mb-2">Section *</label>
+                    <select id="section" name="section" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Select Section</option>
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                        <option value="D">Section D</option>
+                    </select>
+                </div>
+
+                <!-- RFID Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 mt-6">
+                        <i class="fas fa-id-card mr-2 text-purple-600"></i>
+                        RFID Information
+                    </h3>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="rfidTagId" class="block text-sm font-medium text-gray-700 mb-2">RFID Tag ID *</label>
+                    <div class="relative">
+                        <input type="text" id="rfidTagId" name="rfidTagId" required
+                               class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Enter RFID tag ID or scan card">
+                        <button type="button" onclick="generateRFID()" 
+                                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-random"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Scan the RFID card or enter the ID manually
+                    </p>
+                </div>
+
+                <!-- Parent Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2 mt-6">
+                        <i class="fas fa-users mr-2 text-green-600"></i>
+                        Parent/Guardian Information
+                    </h3>
+                </div>
+
+                <div>
+                    <label for="parentContact" class="block text-sm font-medium text-gray-700 mb-2">Parent Contact Number</label>
+                    <input type="tel" id="parentContact" name="parentContact"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="Enter parent's phone number">
+                </div>
+
+                <div>
+                    <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">Parent Email</label>
+                    <input type="email" id="parentEmail" name="parentEmail"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="Enter parent's email address">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="/teacher/students" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Add Student
+                </button>
+            </div>
+            <!-- Face Capture Section -->
+            <div class="md:col-span-2 mt-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+                    <i class="fas fa-camera mr-2 text-pink-600"></i>
+                    Face Registration (Required for Recognition)
+                </h3>
+                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
+                    <div>
+                        <video id="faceCam" width="320" height="240" autoplay muted class="rounded-lg border"></video>
+                        <button type="button" id="captureFace" class="mt-2 w-full bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-pink-700 transition-colors">
+                            <i class="fas fa-camera"></i> Capture Face
+                        </button>
+                    </div>
+                    <div>
+                        <canvas id="facePreview" width="320" height="240" class="rounded-lg border"></canvas>
+                        <input type="hidden" id="faceDescriptor" name="faceDescriptor">
+                        <p id="faceStatus" class="text-sm mt-2 text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function generateRFID() {
+        // Generate a random RFID-like ID
+        const chars = '0123456789ABCDEF';
+        let result = '';
+        for (let i = 0; i < 8; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('rfidTagId').value = result;
+    }
+
+    // Auto-format phone number
+    document.getElementById('parentContact').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 6) {
+            value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
+        e.target.value = value;
+    });
+
+// Face-api.js model loading and face capture logic
+let faceStream;
+let faceDetectionModelLoaded = false;
+
+function setupFaceApiCapture() {
+    const video = document.getElementById('faceCam');
+    const canvas = document.getElementById('facePreview');
+    const faceStatus = document.getElementById('faceStatus');
+    const faceDescriptorInput = document.getElementById('faceDescriptor');
+    async function loadFaceApiModels() {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+        faceDetectionModelLoaded = true;
+    }
+    async function startFaceCam() {
+        try {
+            faceStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = faceStream;
+        } catch (err) {
+            faceStatus.textContent = 'Unable to access webcam.';
+        }
+    }
+    document.getElementById('captureFace').addEventListener('click', async () => {
+        if (!faceDetectionModelLoaded) {
+            faceStatus.textContent = 'Face models not loaded yet.';
+            return;
+        }
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const detection = await faceapi.detectSingleFace(canvas, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+        if (detection && detection.descriptor) {
+            faceDescriptorInput.value = JSON.stringify(Array.from(detection.descriptor));
+            faceStatus.textContent = 'Face captured and ready!';
+            faceStatus.className = 'text-green-600 text-sm mt-2';
+        } else {
+            faceDescriptorInput.value = '';
+            faceStatus.textContent = 'No face detected. Please try again.';
+            faceStatus.className = 'text-red-600 text-sm mt-2';
+        }
+    });
+    return Promise.all([
+        loadFaceApiModels(),
+        startFaceCam()
+    ]);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.faceapi) {
+        setupFaceApiCapture();
+    } else {
+        const faceStatus = document.getElementById('faceStatus');
+        if (faceStatus) faceStatus.textContent = 'face-api.js not loaded.';
+    }
+});
+
+// Prevent form submission if faceDescriptor is empty
+document.getElementById('addStudentForm').addEventListener('submit', function(e) {
+    const faceDescriptorInput = document.getElementById('faceDescriptor');
+    if (!faceDescriptorInput.value || faceDescriptorInput.value === '[]') {
+        e.preventDefault();
+        const faceStatus = document.getElementById('faceStatus');
+        faceStatus.textContent = 'Please capture a clear face before submitting.';
+        faceStatus.className = 'text-red-600 text-sm mt-2';
+        window.scrollTo({ top: faceStatus.offsetTop - 100, behavior: 'smooth' });
+    }
+});
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<%- include('../partials/footer') %>

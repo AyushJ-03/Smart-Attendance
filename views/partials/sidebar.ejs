@@ -1,0 +1,49 @@
+<div class="p-6">
+    <% if (user && user.role === 'teacher') { %>
+        <!-- Teacher Sidebar -->
+        <nav class="space-y-2">
+            <a href="/teacher/dashboard" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-tachometer-alt w-5 mr-3"></i>
+                Dashboard
+            </a>
+            
+            <a href="/teacher/students" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-users w-5 mr-3"></i>
+                Students
+            </a>
+            
+            <a href="/teacher/attendance" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-calendar-check w-5 mr-3"></i>
+                Attendance Records
+            </a>
+            
+            <a href="/teacher/mark-attendance" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-check-square w-5 mr-3"></i>
+                Mark Attendance
+            </a>
+            
+            <a href="/teacher/facial-recognition" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-camera w-5 mr-3"></i>
+                Facial Recognition
+            </a>
+            
+            <a href="/teacher/reports" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                <i class="fas fa-chart-bar w-5 mr-3"></i>
+                Reports
+            </a>
+        </nav>
+    <% } else if (user && user.role === 'government') { %>
+        <!-- Government Sidebar -->
+        <nav class="space-y-2">
+            <a href="/government/dashboard" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors">
+                <i class="fas fa-tachometer-alt w-5 mr-3"></i>
+                Dashboard
+            </a>
+            
+            <a href="/government/analytics" class="flex items-center p-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors">
+                <i class="fas fa-chart-line w-5 mr-3"></i>
+                Analytics
+            </a>
+        </nav>
+    <% } %>
+</div>

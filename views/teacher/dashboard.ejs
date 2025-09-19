@@ -1,0 +1,195 @@
+<%- include('../partials/header', { title: 'Teacher Dashboard' }) %>
+
+<div class="space-y-6">
+    <!-- Welcome Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 text-white">
+        <h1 class="text-3xl font-bold mb-2">Welcome back, <%= user.name %>!</h1>
+        <p class="text-blue-100">
+            <i class="fas fa-school mr-2"></i>
+            <%= user.schoolId.name %>
+        </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-scale">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Total Students</p>
+                    <p class="text-3xl font-bold text-gray-900"><%= stats.totalStudents %></p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-scale">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Present Today</p>
+                    <p class="text-3xl font-bold text-green-600"><%= stats.presentCount %></p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                    <i class="fas fa-check text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-scale">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Absent Today</p>
+                    <p class="text-3xl font-bold text-red-600"><%= stats.absentCount %></p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-full">
+                    <i class="fas fa-times text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover-scale">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Attendance Rate</p>
+                    <p class="text-3xl font-bold text-indigo-600"><%= stats.attendancePercentage %>%</p>
+                </div>
+                <div class="bg-indigo-100 p-3 rounded-full">
+                    <i class="fas fa-chart-pie text-indigo-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Today's Attendance -->
+        <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-md border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Today's Attendance</h2>
+                <canvas id="attendancePieChart" width="100" height="100"></canvas>
+            </div>
+            
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                <% todayAttendance.forEach(attendance => { %>
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-<%= attendance.status === 'present' ? 'green' : 'red' %>-100 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-<%= attendance.status === 'present' ? 'check' : 'times' %> text-<%= attendance.status === 'present' ? 'green' : 'red' %>-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900"><%= attendance.studentId.name %></p>
+                                <p class="text-sm text-gray-600">Roll: <%= attendance.studentId.rollNumber %></p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-medium text-<%= attendance.status === 'present' ? 'green' : 'red' %>-600">
+                                <%= attendance.status.charAt(0).toUpperCase() + attendance.status.slice(1) %>
+                            </p>
+                            <% if (attendance.timeIn) { %>
+                                <p class="text-xs text-gray-500"><%= attendance.timeIn.toLocaleTimeString() %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+                
+                <% if (todayAttendance.length === 0) { %>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-calendar-times text-4xl mb-4"></i>
+                        <p>No attendance records for today</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- At-Risk Students -->
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                At-Risk Students
+            </h2>
+            
+            <div class="space-y-4">
+                <% riskStudents.forEach(student => { %>
+                    <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-gray-900"><%= student.name %></p>
+                                <p class="text-sm text-gray-600">Roll: <%= student.rollNumber %></p>
+                                <p class="text-sm text-red-600">Risk Score: <%= Math.round(student.dropoutRisk * 100) %>%</p>
+                            </div>
+                            <a href="/teacher/students/<%= student._id %>" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                        <div class="mt-2">
+                            <% if (student.riskFactors && student.riskFactors.length > 0) { %>
+                                <p class="text-xs text-gray-600">Factors: <%= student.riskFactors.join(', ') %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+                
+                <% if (riskStudents.length === 0) { %>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-smile text-4xl mb-4 text-green-500"></i>
+                        <p>No high-risk students</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">Quick Actions</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="/teacher/mark-attendance" class="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                <i class="fas fa-check-square text-2xl text-blue-600 mb-2"></i>
+                <span class="text-sm font-medium text-blue-800">Mark Attendance</span>
+            </a>
+            
+            <a href="/teacher/students/add" class="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                <i class="fas fa-user-plus text-2xl text-green-600 mb-2"></i>
+                <span class="text-sm font-medium text-green-800">Add Student</span>
+            </a>
+            
+            <a href="/teacher/facial-recognition" class="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                <i class="fas fa-camera text-2xl text-purple-600 mb-2"></i>
+                <span class="text-sm font-medium text-purple-800">Face Recognition</span>
+            </a>
+            
+            <a href="/teacher/reports" class="flex flex-col items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                <i class="fas fa-chart-bar text-2xl text-orange-600 mb-2"></i>
+                <span class="text-sm font-medium text-orange-800">Generate Reports</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Attendance Pie Chart
+    const ctx = document.getElementById('attendancePieChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Present', 'Absent'],
+            datasets: [{
+                data: [<%= stats.presentCount %>, <%= stats.absentCount %>],
+                backgroundColor: ['#10B981', '#EF4444'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %>

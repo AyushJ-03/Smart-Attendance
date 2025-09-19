@@ -1,0 +1,48 @@
+<%- include('../partials/header', { title: 'Edit Student' }) %>
+
+<div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-md mt-8">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Edit Student</h1>
+    <% if (error) { %>
+        <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/teacher/students/<%= student._id %>/edit">
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Name</label>
+            <input type="text" name="name" value="<%= student.name %>" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Roll Number</label>
+            <input type="text" name="rollNumber" value="<%= student.rollNumber %>" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">RFID Tag ID</label>
+            <input type="text" name="rfidTagId" value="<%= student.rfidTagId %>" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Class</label>
+            <input type="text" name="class" value="<%= student.class %>" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Section</label>
+            <input type="text" name="section" value="<%= student.section %>" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Parent Contact</label>
+            <input type="text" name="parentContact" value="<%= student.parentContact %>" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Parent Email</label>
+            <input type="email" name="parentEmail" value="<%= student.parentEmail %>" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Face Descriptor (JSON array, 128 numbers)</label>
+            <textarea name="faceDescriptor" rows="4" class="w-full border rounded px-3 py-2"><%= JSON.stringify(student.faceDescriptor) %></textarea>
+            <small class="text-gray-500">Paste a valid 128-length array or use your face capture tool.</small>
+        </div>
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Update Student</button>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/footer') %>

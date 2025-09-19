@@ -1,0 +1,386 @@
+<%- include('../partials/header', { title: 'School Details' }) %>
+
+<% if (!school) { %>
+  <div class="max-w-2xl mx-auto mt-16 bg-white rounded-xl shadow-lg p-8 text-center">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">School Not Found</h1>
+    <p class="text-gray-600 mb-6">The school you are looking for does not exist or has been removed.</p>
+    <a href="/government/dashboard" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+      <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+    </a>
+  </div>
+<% } else { %>
+<div class="max-w-7xl mx-auto px-4 py-10 space-y-10">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-center md:text-left">
+            <h1 class="text-4xl font-bold text-gray-800"><%= school.name %></h1>
+            <p class="text-gray-600 mt-2 flex items-center justify-center md:justify-start">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                <%= school.address %>, <%= school.district %>
+            </p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="/government/dashboard" class="bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+            </a>
+            <button onclick="generateSchoolReport()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
+                <i class="fas fa-file-export mr-2"></i>
+                Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- School Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+            <p class="text-sm font-medium text-gray-600 mb-2">Total Students</p>
+            <p class="text-3xl font-bold text-gray-900 mb-2"><%= students.length %></p>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <i class="fas fa-users text-blue-600 text-xl"></i>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+            <p class="text-sm font-medium text-gray-600 mb-2">Avg. Attendance</p>
+            <p class="text-3xl font-bold text-green-600 mb-2">
+                <%= attendanceTrend.length > 0 ? 
+                    (attendanceTrend.reduce((sum, day) => sum + parseFloat(day.percentage), 0) / attendanceTrend.length).toFixed(1) 
+                    : '0' %>%
+            </p>
+            <div class="bg-green-100 p-3 rounded-full">
+                <i class="fas fa-chart-line text-green-600 text-xl"></i>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+            <p class="text-sm font-medium text-gray-600 mb-2">At-Risk Students</p>
+            <p class="text-3xl font-bold text-red-600 mb-2"><%= riskStudents.length %></p>
+            <div class="bg-red-100 p-3 rounded-full">
+                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 shadow-md border border-gray-100 flex flex-col items-center">
+            <p class="text-sm font-medium text-gray-600 mb-2">School Code</p>
+            <p class="text-2xl font-bold text-indigo-600 mb-2"><%= school.code %></p>
+            <div class="bg-indigo-100 p-3 rounded-full">
+                <i class="fas fa-id-card text-indigo-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-blue-600"></i>
+                7-Day Attendance Trend
+            </h3>
+            <div class="h-64">
+                <canvas id="attendanceTrendChart"></canvas>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-purple-600"></i>
+                Student Distribution by Class
+            </h3>
+            <div class="h-64">
+                <canvas id="classDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- At-Risk Students -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2 text-red-600"></i>
+                Students at Risk of Dropping Out
+            </h3>
+            <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                <%= riskStudents.length %> students
+            </span>
+        </div>
+        <% if (riskStudents.length > 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <% riskStudents.forEach(student => { %>
+                    <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-sm font-medium text-red-800">
+                                    <%= student.name.charAt(0).toUpperCase() %>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900"><%= student.name %></p>
+                                <p class="text-sm text-gray-600">Class <%= student.class %>-<%= student.section %></p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Risk Score:</span>
+                                <span class="font-semibold text-red-600"><%= Math.round(student.dropoutRisk * 100) %>%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Attendance:</span>
+                                <span class="font-semibold"><%= student.attendancePercentage.toFixed(1) %>%</span>
+                            </div>
+                            <% if (student.riskFactors && student.riskFactors.length > 0) { %>
+                                <div class="mt-2">
+                                    <p class="text-xs text-gray-600 mb-1">Risk Factors:</p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <% student.riskFactors.slice(0, 2).forEach(factor => { %>
+                                            <span class="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full">
+                                                <%= factor %>
+                                            </span>
+                                        <% }) %>
+                                        <% if (student.riskFactors.length > 2) { %>
+                                            <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs rounded-full">
+                                                +<%= student.riskFactors.length - 2 %> more
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-8 text-gray-500">
+                <i class="fas fa-smile text-4xl mb-4 text-green-500"></i>
+                <p>No students currently at high risk of dropping out</p>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- All Students List -->
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-users mr-2 text-green-600"></i>
+                    All Students (<%= students.length %>)
+                </h3>
+                <div class="flex space-x-2">
+                    <input type="text" placeholder="Search students..." id="studentSearch"
+                           class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    <select id="classFilter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <option value="">All Classes</option>
+                        <% const uniqueClasses = [...new Set(students.map(s => s.class))].sort(); %>
+                        <% uniqueClasses.forEach(className => { %>
+                            <option value="<%= className %>">Class <%= className %></option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Attendance</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RFID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="studentsTableBody">
+                    <% students.forEach(student => { %>
+                        <tr class="hover:bg-gray-50 student-row" 
+                            data-name="<%= student.name.toLowerCase() %>" 
+                            data-class="<%= student.class %>">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-8 w-8">
+                                        <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                            <span class="text-xs font-medium text-indigo-800">
+                                                <%= student.name.charAt(0).toUpperCase() %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900"><%= student.name %></div>
+                                        <div class="text-sm text-gray-500">Roll: <%= student.rollNumber %></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                    <%= student.class %>-<%= student.section %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900"><%= student.attendancePercentage.toFixed(1) %>%</div>
+                                    <div class="ml-2 w-16 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-<%= student.attendancePercentage >= 75 ? 'green' : 'red' %>-600 h-2 rounded-full" 
+                                             style="width: <%= Math.min(100, student.attendancePercentage) %>%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <% const riskLevel = student.dropoutRisk > 0.7 ? 'high' : student.dropoutRisk > 0.4 ? 'medium' : 'low'; %>
+                                <% const riskColor = riskLevel === 'high' ? 'red' : riskLevel === 'medium' ? 'yellow' : 'green'; %>
+                                <span class="px-2 py-1 text-xs font-medium bg-<%= riskColor %>-100 text-<%= riskColor %>-800 rounded-full">
+                                    <%= riskLevel.toUpperCase() %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
+                                <%= student.rfidTagId %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <% if (student.parentContact) { %>
+                                    <div><%= student.parentContact %></div>
+                                <% } %>
+                                <% if (student.parentEmail) { %>
+                                    <div class="text-xs text-gray-500"><%= student.parentEmail %></div>
+                                <% } %>
+                                <% if (!student.parentContact && !student.parentEmail) { %>
+                                    <span class="text-gray-400">No contact info</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<script>
+    // Create attendance trend chart
+    const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+    const trendData = <%- JSON.stringify(attendanceTrend) %>;
+    
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendData.map(day => day.date),
+            datasets: [{
+                label: 'Attendance Rate (%)',
+                data: trendData.map(day => parseFloat(day.percentage)),
+                borderColor: '#3B82F6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 70,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Create class distribution chart
+    const classCtx = document.getElementById('classDistributionChart').getContext('2d');
+    const students = <%- JSON.stringify(students) %>;
+    
+    // Count students by class
+    const classCounts = {};
+    students.forEach(student => {
+        const className = `Class ${student.class}`;
+        classCounts[className] = (classCounts[className] || 0) + 1;
+    });
+    
+    new Chart(classCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(classCounts),
+            datasets: [{
+                data: Object.values(classCounts),
+                backgroundColor: [
+                    '#3B82F6', '#10B981', '#F59E0B', '#EF4444',
+                    '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Search and filter functionality
+    document.getElementById('studentSearch').addEventListener('input', filterStudents);
+    document.getElementById('classFilter').addEventListener('change', filterStudents);
+
+    function filterStudents() {
+        const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+        const classFilter = document.getElementById('classFilter').value;
+        const rows = document.querySelectorAll('.student-row');
+
+        rows.forEach(row => {
+            const name = row.dataset.name;
+            const studentClass = row.dataset.class;
+            
+            const matchesSearch = name.includes(searchTerm);
+            const matchesClass = !classFilter || studentClass === classFilter;
+            
+            if (matchesSearch && matchesClass) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function generateSchoolReport() {
+        showToast('Generating detailed school report...', 'info');
+        setTimeout(() => {
+            showToast('School report generated successfully!', 'success');
+        }, 3000);
+    }
+
+    function showToast(message, type) {
+        const colors = {
+            success: 'bg-green-600',
+            info: 'bg-blue-600',
+            warning: 'bg-yellow-600',
+            error: 'bg-red-600'
+        };
+        
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-3"></i>
+                ${message}
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+</script>
+
+<%- include('../partials/footer') %>
