@@ -1,13 +1,13 @@
 // GET student details for editing (AJAX)
-router.get('/students/:id/edit', async (req, res) => {
-  try {
-    const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ error: 'Student not found' });
-    res.json(student);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch student' });
-  }
-});
+// router.get('/students/:id/edit', async (req, res) => {
+//   try {
+//     const student = await Student.findById(req.params.id);
+//     if (!student) return res.status(404).json({ error: 'Student not found' });
+//     res.json(student);
+//   } catch (error) {
+//     res.status(500).json({ error: 'Failed to fetch student' });
+//   }
+// });
 
 // ...existing code...
 
