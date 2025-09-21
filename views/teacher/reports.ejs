@@ -29,58 +29,21 @@
             <div class="space-y-3">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Total Students:</span>
-                    <span class="font-semibold" id="dailyTotal">-</span>
+                    <span class="font-semibold" id="dailyTotal"><%= typeof reportData !== 'undefined' && reportData.daily ? reportData.daily.total : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Present:</span>
-                    <span class="font-semibold text-green-600" id="dailyPresent">-</span>
+                    <span class="font-semibold text-green-600" id="dailyPresent"><%= typeof reportData !== 'undefined' && reportData.daily ? reportData.daily.present : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Absent:</span>
-                    <span class="font-semibold text-red-600" id="dailyAbsent">-</span>
+                    <span class="font-semibold text-red-600" id="dailyAbsent"><%= typeof reportData !== 'undefined' && reportData.daily ? reportData.daily.absent : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Attendance Rate:</span>
-                    <span class="font-semibold text-blue-600" id="dailyRate">-</span>
+                    <span class="font-semibold text-blue-600" id="dailyRate"><%= typeof reportData !== 'undefined' && reportData.daily ? reportData.daily.rate + '%' : '-' %></span>
                 </div>
             </div>
-            <button onclick="generateDailyReport()" class="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-download mr-2"></i>Generate Report
-            </button>
-        </div>
-
-        <!-- Weekly Attendance Report -->
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover-scale">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                    <i class="fas fa-calendar-week text-green-600 text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800">Weekly Report</h3>
-                    <p class="text-sm text-gray-600">Last 7 days summary</p>
-                </div>
-            </div>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Avg. Attendance:</span>
-                    <span class="font-semibold text-green-600" id="weeklyAvg">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Best Day:</span>
-                    <span class="font-semibold" id="weeklyBest">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Worst Day:</span>
-                    <span class="font-semibold" id="weeklyWorst">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Trend:</span>
-                    <span class="font-semibold" id="weeklyTrend">-</span>
-                </div>
-            </div>
-            <button onclick="generateWeeklyReport()" class="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors">
-                <i class="fas fa-download mr-2"></i>Generate Report
-            </button>
         </div>
 
         <!-- Monthly Attendance Report -->
@@ -97,56 +60,22 @@
             <div class="space-y-3">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">School Days:</span>
-                    <span class="font-semibold" id="monthlyDays">-</span>
+                    <span class="font-semibold" id="monthlyDays"><%= typeof reportData !== 'undefined' && reportData.monthly ? reportData.monthly.days : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Avg. Attendance:</span>
-                    <span class="font-semibold text-purple-600" id="monthlyAvg">-</span>
+                    <span class="font-semibold text-purple-600" id="monthlyAvg"><%= typeof reportData !== 'undefined' && reportData.monthly ? reportData.monthly.avg + '%' : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Perfect Days:</span>
-                    <span class="font-semibold text-green-600" id="monthlyPerfect">-</span>
+                    <span class="font-semibold text-green-600" id="monthlyPerfect"><%= typeof reportData !== 'undefined' && reportData.monthly ? reportData.monthly.perfect : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Low Days (<75%):</span>
-                    <span class="font-semibold text-red-600" id="monthlyLow">-</span>
+                    <span class="font-semibold text-red-600" id="monthlyLow"><%= typeof reportData !== 'undefined' && reportData.monthly ? reportData.monthly.low : '-' %></span>
                 </div>
             </div>
             <button onclick="generateMonthlyReport()" class="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                <i class="fas fa-download mr-2"></i>Generate Report
-            </button>
-        </div>
-
-        <!-- Student Performance Report -->
-        <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover-scale">
-            <div class="flex items-center mb-4">
-                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-                    <i class="fas fa-user-graduate text-orange-600 text-xl"></i>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-800">Student Performance</h3>
-                    <p class="text-sm text-gray-600">Individual student analysis</p>
-                </div>
-            </div>
-            <div class="space-y-3">
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Top Performers:</span>
-                    <span class="font-semibold text-green-600" id="topPerformers">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">At Risk:</span>
-                    <span class="font-semibold text-red-600" id="atRisk">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Improved:</span>
-                    <span class="font-semibold text-blue-600" id="improved">-</span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-600">Declined:</span>
-                    <span class="font-semibold text-orange-600" id="declined">-</span>
-                </div>
-            </div>
-            <button onclick="generateStudentReport()" class="w-full mt-4 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700 transition-colors">
                 <i class="fas fa-download mr-2"></i>Generate Report
             </button>
         </div>
@@ -165,19 +94,19 @@
             <div class="space-y-3">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Best Class:</span>
-                    <span class="font-semibold text-green-600" id="bestClass">-</span>
+                    <span class="font-semibold text-green-600" id="bestClass"><%= typeof reportData !== 'undefined' && reportData.classes ? reportData.classes.best : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Needs Attention:</span>
-                    <span class="font-semibold text-red-600" id="needsAttention">-</span>
+                    <span class="font-semibold text-red-600" id="needsAttention"><%= typeof reportData !== 'undefined' && reportData.classes ? reportData.classes.needsAttention : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Most Improved:</span>
-                    <span class="font-semibold text-blue-600" id="mostImproved">-</span>
+                    <span class="font-semibold text-blue-600" id="mostImproved"><%= typeof reportData !== 'undefined' && reportData.classes ? reportData.classes.mostImproved : '-' %></span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Avg. Difference:</span>
-                    <span class="font-semibold" id="avgDifference">-</span>
+                    <span class="font-semibold" id="avgDifference"><%= typeof reportData !== 'undefined' && reportData.classes ? reportData.classes.avgDifference : '-' %></span>
                 </div>
             </div>
             <button onclick="generateClassReport()" class="w-full mt-4 bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors">
@@ -256,19 +185,19 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="text-center p-4 bg-blue-50 rounded-lg">
-                <div class="text-3xl font-bold text-blue-600 mb-2" id="totalStudentsAnalytics">0</div>
+                <div class="text-3xl font-bold text-blue-600 mb-2" id="totalStudentsAnalytics"><%= typeof reportData !== 'undefined' && reportData.analytics ? reportData.analytics.totalStudents : '-' %></div>
                 <div class="text-sm text-gray-600">Total Students</div>
             </div>
             <div class="text-center p-4 bg-green-50 rounded-lg">
-                <div class="text-3xl font-bold text-green-600 mb-2" id="avgAttendanceAnalytics">0%</div>
+                <div class="text-3xl font-bold text-green-600 mb-2" id="avgAttendanceAnalytics"><%= typeof reportData !== 'undefined' && reportData.analytics ? reportData.analytics.avgAttendance + '%' : '-' %></div>
                 <div class="text-sm text-gray-600">Average Attendance</div>
             </div>
             <div class="text-center p-4 bg-red-50 rounded-lg">
-                <div class="text-3xl font-bold text-red-600 mb-2" id="riskStudentsAnalytics">0</div>
+                <div class="text-3xl font-bold text-red-600 mb-2" id="riskStudentsAnalytics"><%= typeof reportData !== 'undefined' && reportData.analytics ? reportData.analytics.riskStudents : '-' %></div>
                 <div class="text-sm text-gray-600">At-Risk Students</div>
             </div>
             <div class="text-center p-4 bg-purple-50 rounded-lg">
-                <div class="text-3xl font-bold text-purple-600 mb-2" id="perfectAttendanceAnalytics">0</div>
+                <div class="text-3xl font-bold text-purple-600 mb-2" id="perfectAttendanceAnalytics"><%= typeof reportData !== 'undefined' && reportData.analytics ? reportData.analytics.perfectAttendance : '-' %></div>
                 <div class="text-sm text-gray-600">Perfect Attendance</div>
             </div>
         </div>
@@ -281,7 +210,16 @@
                     Top Performers (>95% Attendance)
                 </h4>
                 <div id="topPerformersList" class="space-y-2">
-                    <!-- Will be populated by JavaScript -->
+                    <% if (reportData && reportData.topPerformers && reportData.topPerformers.length > 0) { %>
+                        <% reportData.topPerformers.forEach(function(student) { %>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded px-3 py-2 flex justify-between items-center">
+                                <span><%= student.name %> (<%= student.class %>)</span>
+                                <span class="font-semibold text-green-700"><%= student.percentage %>%</span>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="text-gray-400 text-sm">No top performers in the last 30 days.</div>
+                    <% } %>
                 </div>
             </div>
             
@@ -291,7 +229,16 @@
                     Students Needing Attention (<75% Attendance)
                 </h4>
                 <div id="atRiskList" class="space-y-2">
-                    <!-- Will be populated by JavaScript -->
+                    <% if (reportData && reportData.atRiskList && reportData.atRiskList.length > 0) { %>
+                        <% reportData.atRiskList.forEach(function(student) { %>
+                            <div class="bg-red-50 border border-red-200 rounded px-3 py-2 flex justify-between items-center">
+                                <span><%= student.name %> (<%= student.class %>)</span>
+                                <span class="font-semibold text-red-700"><%= student.percentage %>%</span>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="text-gray-400 text-sm">No students below 75% attendance in the last 30 days.</div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -299,263 +246,7 @@
 </div>
 
 <script>
-    // Initialize charts and data
-    document.addEventListener('DOMContentLoaded', function() {
-        loadReportData();
-        createTrendsChart();
-        createClassChart();
-    });
 
-    // Load report data
-    async function loadReportData() {
-        try {
-            // Simulate API call to get report data
-            const reportData = {
-                daily: {
-                    total: 150,
-                    present: 142,
-                    absent: 8,
-                    rate: 94.7
-                },
-                weekly: {
-                    avg: 92.3,
-                    best: 'Monday (96.2%)',
-                    worst: 'Friday (88.1%)',
-                    trend: '↗ Improving'
-                },
-                monthly: {
-                    days: 22,
-                    avg: 91.8,
-                    perfect: 5,
-                    low: 3
-                },
-                students: {
-                    topPerformers: 45,
-                    atRisk: 12,
-                    improved: 8,
-                    declined: 5
-                },
-                classes: {
-                    best: 'Class 5-A (95.2%)',
-                    needsAttention: 'Class 8-B (82.1%)',
-                    mostImproved: 'Class 3-C (+5.2%)',
-                    avgDifference: '8.3%'
-                },
-                analytics: {
-                    totalStudents: 150,
-                    avgAttendance: 91.8,
-                    riskStudents: 12,
-                    perfectAttendance: 45
-                }
-            };
-
-            // Update daily report
-            document.getElementById('dailyTotal').textContent = reportData.daily.total;
-            document.getElementById('dailyPresent').textContent = reportData.daily.present;
-            document.getElementById('dailyAbsent').textContent = reportData.daily.absent;
-            document.getElementById('dailyRate').textContent = reportData.daily.rate + '%';
-
-            // Update weekly report
-            document.getElementById('weeklyAvg').textContent = reportData.weekly.avg + '%';
-            document.getElementById('weeklyBest').textContent = reportData.weekly.best;
-            document.getElementById('weeklyWorst').textContent = reportData.weekly.worst;
-            document.getElementById('weeklyTrend').textContent = reportData.weekly.trend;
-
-            // Update monthly report
-            document.getElementById('monthlyDays').textContent = reportData.monthly.days;
-            document.getElementById('monthlyAvg').textContent = reportData.monthly.avg + '%';
-            document.getElementById('monthlyPerfect').textContent = reportData.monthly.perfect;
-            document.getElementById('monthlyLow').textContent = reportData.monthly.low;
-
-            // Update student performance
-            document.getElementById('topPerformers').textContent = reportData.students.topPerformers;
-            document.getElementById('atRisk').textContent = reportData.students.atRisk;
-            document.getElementById('improved').textContent = reportData.students.improved;
-            document.getElementById('declined').textContent = reportData.students.declined;
-
-            // Update class comparison
-            document.getElementById('bestClass').textContent = reportData.classes.best;
-            document.getElementById('needsAttention').textContent = reportData.classes.needsAttention;
-            document.getElementById('mostImproved').textContent = reportData.classes.mostImproved;
-            document.getElementById('avgDifference').textContent = reportData.classes.avgDifference;
-
-            // Update analytics
-            document.getElementById('totalStudentsAnalytics').textContent = reportData.analytics.totalStudents;
-            document.getElementById('avgAttendanceAnalytics').textContent = reportData.analytics.avgAttendance + '%';
-            document.getElementById('riskStudentsAnalytics').textContent = reportData.analytics.riskStudents;
-            document.getElementById('perfectAttendanceAnalytics').textContent = reportData.analytics.perfectAttendance;
-
-            // Load student lists
-            loadStudentLists();
-
-        } catch (error) {
-            console.error('Error loading report data:', error);
-        }
-    }
-
-    // Load student lists
-    function loadStudentLists() {
-        // Top performers
-        const topPerformers = [
-            { name: 'Sarah Johnson', attendance: '98.5%', class: '5-A' },
-            { name: 'Mike Chen', attendance: '97.8%', class: '6-B' },
-            { name: 'Emma Davis', attendance: '97.2%', class: '4-C' },
-            { name: 'Alex Rodriguez', attendance: '96.9%', class: '7-A' },
-            { name: 'Lisa Wang', attendance: '96.5%', class: '5-B' }
-        ];
-
-        const topPerformersList = document.getElementById('topPerformersList');
-        topPerformersList.innerHTML = topPerformers.map(student => `
-            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                        <span class="text-xs font-medium text-green-800">${student.name.charAt(0)}</span>
-                    </div>
-                    <div>
-                        <div class="font-medium text-gray-900">${student.name}</div>
-                        <div class="text-sm text-gray-600">Class ${student.class}</div>
-                    </div>
-                </div>
-                <div class="text-green-600 font-semibold">${student.attendance}</div>
-            </div>
-        `).join('');
-
-        // At-risk students
-        const atRiskStudents = [
-            { name: 'John Smith', attendance: '68.2%', class: '8-B', risk: 'High' },
-            { name: 'Maria Garcia', attendance: '71.5%', class: '7-C', risk: 'Medium' },
-            { name: 'David Brown', attendance: '69.8%', class: '6-A', risk: 'High' },
-            { name: 'Anna Wilson', attendance: '73.1%', class: '9-B', risk: 'Medium' }
-        ];
-
-        const atRiskList = document.getElementById('atRiskList');
-        atRiskList.innerHTML = atRiskStudents.map(student => `
-            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                <div class="flex items-center">
-                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                        <span class="text-xs font-medium text-red-800">${student.name.charAt(0)}</span>
-                    </div>
-                    <div>
-                        <div class="font-medium text-gray-900">${student.name}</div>
-                        <div class="text-sm text-gray-600">Class ${student.class}</div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="text-red-600 font-semibold">${student.attendance}</div>
-                    <div class="text-xs text-red-500">${student.risk} Risk</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Create trends chart
-    function createTrendsChart() {
-        const ctx = document.getElementById('trendsChart').getContext('2d');
-        
-        // Generate sample data for last 30 days
-        const labels = [];
-        const attendanceData = [];
-        
-        for (let i = 29; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            
-            // Generate realistic attendance data (85-98%)
-            const baseAttendance = 90;
-            const variation = Math.sin(i / 7) * 5 + Math.random() * 8;
-            attendanceData.push(Math.max(85, Math.min(98, baseAttendance + variation)));
-        }
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Attendance Rate (%)',
-                    data: attendanceData,
-                    borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 80,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            maxTicksLimit: 10
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Create class comparison chart
-    function createClassChart() {
-        const ctx = document.getElementById('classChart').getContext('2d');
-        
-        const classes = ['1-A', '2-A', '3-A', '4-A', '5-A', '6-A', '7-A', '8-A'];
-        const attendanceRates = [94.2, 91.8, 89.5, 92.3, 95.1, 88.7, 86.4, 90.9];
-        
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: classes,
-                datasets: [{
-                    label: 'Attendance Rate (%)',
-                    data: attendanceRates,
-                    backgroundColor: attendanceRates.map(rate => 
-                        rate >= 95 ? '#10B981' : 
-                        rate >= 90 ? '#3B82F6' : 
-                        rate >= 85 ? '#F59E0B' : '#EF4444'
-                    ),
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 80,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     // Report generation functions
     function generateDailyReport() {
@@ -649,3 +340,108 @@
 </script>
 
 <%- include('../partials/footer') %>
+
+
+<!-- Embed backend data for charts as JSON (only once) -->
+<script id="trends-data" type="application/json"><%- JSON.stringify(reportData && reportData.trends ? reportData.trends : []) %></script>
+<script id="class-perf-data" type="application/json"><%- JSON.stringify(reportData && reportData.classPerformance ? reportData.classPerformance : []) %></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Attendance Trends Chart
+    let trendsData = [];
+    try {
+        trendsData = JSON.parse(document.getElementById('trends-data').textContent);
+        console.log('Trends Data:', trendsData);
+    } catch (e) {
+        console.error('Failed to parse trends data:', e);
+    }
+    const trendsCanvas = document.getElementById('trendsChart');
+    if (trendsCanvas && trendsData.length > 0 && window.Chart) {
+        const trendsCtx = trendsCanvas.getContext('2d');
+        new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: trendsData.map(d => d.date),
+                datasets: [{
+                    label: 'Attendance Rate (%)',
+                    data: trendsData.map(d => d.rate),
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        title: { display: true, text: 'Attendance (%)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Date' }
+                    }
+                }
+            }
+        });
+    } else {
+        if (!window.Chart) console.error('Chart.js is not loaded!');
+        if (!trendsCanvas) console.error('trendsChart canvas not found!');
+        if (!trendsData.length) console.warn('No trends data to display.');
+    }
+
+    // Class Performance Chart
+    let classPerfData = [];
+    try {
+        classPerfData = JSON.parse(document.getElementById('class-perf-data').textContent);
+        console.log('Class Performance Data:', classPerfData);
+    } catch (e) {
+        console.error('Failed to parse class performance data:', e);
+    }
+    const classCanvas = document.getElementById('classChart');
+    if (classCanvas && classPerfData.length > 0 && window.Chart) {
+        const classCtx = classCanvas.getContext('2d');
+        new Chart(classCtx, {
+            type: 'bar',
+            data: {
+                labels: classPerfData.map(d => d.class),
+                datasets: [{
+                    label: 'Avg. Attendance (%)',
+                    data: classPerfData.map(d => d.avgRate),
+                    backgroundColor: '#22c55e',
+                    borderColor: '#16a34a',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        title: { display: true, text: 'Attendance (%)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Class' }
+                    }
+                }
+            }
+        });
+    } else {
+        if (!window.Chart) console.error('Chart.js is not loaded!');
+        if (!classCanvas) console.error('classChart canvas not found!');
+        if (!classPerfData.length) console.warn('No class performance data to display.');
+    }
+});
+</script>

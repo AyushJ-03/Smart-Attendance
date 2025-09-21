@@ -58,12 +58,12 @@ function runMLPredictions() {
 
 
 
-  // py.stdout.on("data", (data) => {
-  //   console.log(`ML stdout: ${data}`);
-  // });
-  // py.stderr.on("data", (data) => {
-  //   console.error(`ML stderr: ${data}`);
-  // });
+  py.stdout.on("data", (data) => {
+    console.log(`ML stdout: ${data}`);
+  });
+  py.stderr.on("data", (data) => {
+    console.error(`ML stderr: ${data}`);
+  });
   py.on("close", (code) => {
     console.log(`ML script exited with code ${code}`);
   });

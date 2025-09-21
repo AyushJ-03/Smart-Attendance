@@ -62,11 +62,13 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">District Average</p>
-                    <p class="text-3xl font-bold text-blue-600" id="districtAverage">91.2%</p>
-                    <p class="text-sm text-green-600 mt-1">
-                        <i class="fas fa-arrow-up mr-1"></i>
-                        +2.3% from last period
+                    <p class="text-3xl font-bold text-blue-600" id="districtAverage"><%= typeof districtAverage !== 'undefined' ? districtAverage + '%' : '-' %></p>
+                    <% if (typeof districtTrend !== 'undefined') { %>
+                    <p class="text-sm <%= districtTrend >= 0 ? 'text-green-600' : 'text-red-600' %> mt-1">
+                        <i class="fas fa-arrow-<%= districtTrend >= 0 ? 'up' : 'down' %> mr-1"></i>
+                        <%= districtTrend >= 0 ? '+' : '' %><%= districtTrend %>% from last period
                     </p>
+                    <% } %>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-full">
                     <i class="fas fa-chart-line text-blue-600 text-xl"></i>
@@ -78,8 +80,8 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Best Performing</p>
-                    <p class="text-3xl font-bold text-green-600" id="bestPerforming">96.8%</p>
-                    <p class="text-sm text-gray-600 mt-1">Greenfield Primary</p>
+                    <p class="text-3xl font-bold text-green-600" id="bestPerforming"><%= typeof bestPerforming !== 'undefined' ? bestPerforming.rate + '%' : '-' %></p>
+                    <p class="text-sm text-gray-600 mt-1"><%= typeof bestPerforming !== 'undefined' ? bestPerforming.name : '-' %></p>
                 </div>
                 <div class="bg-green-100 p-3 rounded-full">
                     <i class="fas fa-trophy text-green-600 text-xl"></i>
@@ -91,7 +93,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Needs Attention</p>
-                    <p class="text-3xl font-bold text-red-600" id="needsAttention">3</p>
+                    <p class="text-3xl font-bold text-red-600" id="needsAttention"><%= typeof needsAttention !== 'undefined' ? needsAttention : '-' %></p>
                     <p class="text-sm text-gray-600 mt-1">Schools below 80%</p>
                 </div>
                 <div class="bg-red-100 p-3 rounded-full">
@@ -104,7 +106,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Total Students</p>
-                    <p class="text-3xl font-bold text-purple-600" id="totalStudents">2,847</p>
+                    <p class="text-3xl font-bold text-purple-600" id="totalStudents"><%= typeof totalStudents !== 'undefined' ? totalStudents : '-' %></p>
                     <p class="text-sm text-gray-600 mt-1">Across all schools</p>
                 </div>
                 <div class="bg-purple-100 p-3 rounded-full">
@@ -204,12 +206,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <% const trend = Math.random() > 0.5 ? 'up' : 'down'; %>
-                                <% const trendColor = trend === 'up' ? 'green' : 'red'; %>
-                                <span class="text-<%= trendColor %>-600">
-                                    <i class="fas fa-arrow-<%= trend %> mr-1"></i>
-                                    <%= trend === 'up' ? '+' : '-' %><%= (Math.random() * 5).toFixed(1) %>%
-                                </span>
+                                <span><%= typeof districtStats[district].trend !== 'undefined' ? districtStats[district].trend : '-' %></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <% const status = parseFloat(districtStats[district].avgAttendance) >= 85 ? 'excellent' : parseFloat(districtStats[district].avgAttendance) >= 75 ? 'good' : 'attention'; %>
@@ -392,128 +389,13 @@
         }, 1500);
     }
 
-    function createDistrictTrendChart() {
-        const ctx = document.getElementById('districtTrendChart').getContext('2d');
-        
-        // Generate sample data based on current period
-        const days = currentPeriod === '7d' ? 7 : currentPeriod === '30d' ? 30 : 90;
-        const labels = [];
-        const data = [];
-        
-        for (let i = days - 1; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-            
-            // Generate realistic trend data
-            const baseRate = 90;
-            const variation = Math.sin(i / 7) * 3 + Math.random() * 4;
-            data.push(Math.max(85, Math.min(95, baseRate + variation)));
-        }
-        
-        // Destroy existing chart if it exists
-        if (window.districtChart) {
-            window.districtChart.destroy();
-        }
-        
-        window.districtChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'District Average (%)',
-                    data: data,
-                    borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 80,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            maxTicksLimit: 10
-                        }
-                    }
-                }
-            }
-        });
-    }
+    // function createDistrictTrendChart() {
+    //     // TODO: Replace with real data from backend
+    // }
 
-    function createSchoolComparisonChart() {
-        const ctx = document.getElementById('schoolComparisonChart').getContext('2d');
-        
-        const schools = ['Greenfield Primary', 'Riverside Elementary', 'Mountain View School', 'Valley High', 'Sunset Academy'];
-        const attendanceRates = [96.8, 94.2, 91.5, 88.7, 85.3];
-        
-        // Destroy existing chart if it exists
-        if (window.comparisonChart) {
-            window.comparisonChart.destroy();
-        }
-        
-        window.comparisonChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: schools,
-                datasets: [{
-                    label: 'Attendance Rate (%)',
-                    data: attendanceRates,
-                    backgroundColor: attendanceRates.map(rate => 
-                        rate >= 95 ? '#10B981' : 
-                        rate >= 90 ? '#3B82F6' : 
-                        rate >= 85 ? '#F59E0B' : '#EF4444'
-                    ),
-                    borderColor: '#ffffff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 80,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            maxRotation: 45
-                        }
-                    }
-                }
-            }
-        });
-    }
+    // function createSchoolComparisonChart() {
+    //     // TODO: Replace with real data from backend
+    // }
 
     function exportAnalytics() {
         showToast('Preparing analytics export...', 'info');
