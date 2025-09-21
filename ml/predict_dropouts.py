@@ -34,20 +34,21 @@ def normalize_date(d):
 def build_attendance_sheet(entries):
     normalized_entries = []
     for e in entries:
-        # Use "date" if available
+        date_value = None
+
+        # Prefer "date" if available
         if "date" in e and e["date"]:
-            e["date"] = normalize_date(e["date"])
-        # Else fallback to "timeIn"
+            date_value = e["date"]
+        # Fallback to "timeIn"
         elif "timeIn" in e and e["timeIn"]:
-            e["date"] = normalize_date(e["timeIn"])
+            date_value = e["timeIn"]
+
+        if date_value is not None:
+            e["date"] = normalize_date(date_value)
+            normalized_entries.append(e)
         else:
             print("⚠️ Skipping entry with no date or timeIn:", e)
-            continue
 
-        if e["date"] is not None:
-            normalized_entries.append(e)
-
-    # Replace entries with only valid ones
     entries = normalized_entries
 
     # Days where at least one student was present (exclude holidays)
