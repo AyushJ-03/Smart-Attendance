@@ -32,11 +32,23 @@ def normalize_date(d):
 # Build Attendance Sheet
 # ==============================
 def build_attendance_sheet(entries):
+    normalized_entries = []
     for e in entries:
-        e["date"] = normalize_date(e["date"])
+        # Use "date" if available
+        if "date" in e and e["date"]:
+            e["date"] = normalize_date(e["date"])
+        # Else fallback to "timeIn"
+        elif "timeIn" in e and e["timeIn"]:
+            e["date"] = normalize_date(e["timeIn"])
+        else:
+            print("⚠️ Skipping entry with no date or timeIn:", e)
+            continue
 
-    # filter out invalid dates
-    entries = [e for e in entries if e["date"] is not None]
+        if e["date"] is not None:
+            normalized_entries.append(e)
+
+    # Replace entries with only valid ones
+    entries = normalized_entries
 
     # Days where at least one student was present (exclude holidays)
     valid_days = sorted({e["date"] for e in entries if e["status"].lower() == "present"})
@@ -57,6 +69,7 @@ def build_attendance_sheet(entries):
             )
             row[str(i)] = "P" if present else "A"
         records.append(row)
+
     return pd.DataFrame(records)
 
 # ==============================
