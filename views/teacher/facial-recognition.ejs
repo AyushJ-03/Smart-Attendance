@@ -450,17 +450,18 @@
                 })
             });
             let data = null;
+            let isJson = false;
             try {
                 data = await response.json();
+                isJson = true;
             } catch (e) {
-                // If response is not JSON, treat as success if response.ok
+                // Not JSON, but may still be success
                 data = {};
             }
-            if (response.ok && (!data.error)) {
-                // Add to today's recognitions
+            if (response.ok && (!isJson || !data.error)) {
+                // Success: either not JSON (but 200), or JSON with no error
                 const matchedStudent = validStudents.find(s => s._id === studentId);
                 addToTodayRecognitions(matchedStudent ? matchedStudent.name : studentId, status);
-                // Show success message
                 document.getElementById('recognitionResults').innerHTML = `
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="flex items-center">

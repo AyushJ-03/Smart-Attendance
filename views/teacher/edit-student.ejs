@@ -35,9 +35,22 @@
             <input type="email" name="parentEmail" value="<%= student.parentEmail %>" class="w-full border rounded px-3 py-2" />
         </div>
         <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-2">Face Descriptor (JSON array, 128 numbers)</label>
-            <textarea name="faceDescriptor" rows="4" class="w-full border rounded px-3 py-2"><%= JSON.stringify(student.faceDescriptor) %></textarea>
-            <small class="text-gray-500">Paste a valid 128-length array or use your face capture tool.</small>
+            <input type="hidden" id="faceDescriptor" name="faceDescriptor" value='<%= JSON.stringify(student.faceDescriptor) %>' />
+            <div class="mt-4">
+                <div class="flex items-center space-x-3 mb-2">
+                    <button type="button" id="startCameraBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-camera mr-2"></i>Start Camera
+                    </button>
+                    <button type="button" id="captureFaceBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors" disabled>
+                        <i class="fas fa-camera-retro mr-2"></i>Capture Face
+                    </button>
+                </div>
+                <div class="relative bg-gray-900 rounded-lg overflow-hidden mb-2" style="aspect-ratio: 4/3; max-width: 320px;">
+                    <video id="videoElement" class="w-full h-full object-cover" autoplay muted style="display:none;"></video>
+                    <canvas id="overlay" class="absolute inset-0 w-full h-full pointer-events-none" style="display:none;"></canvas>
+                </div>
+                <div id="faceStatus" class="text-sm text-gray-600"></div>
+            </div>
         </div>
         <div class="flex justify-end">
             <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">Update Student</button>
@@ -46,3 +59,62 @@
 </div>
 
 <%- include('../partials/footer') %>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script>
+let video = document.getElementById('videoElement');
+let overlay = document.getElementById('overlay');
+let startBtn = document.getElementById('startCameraBtn');
+let captureBtn = document.getElementById('captureFaceBtn');
+let faceStatus = document.getElementById('faceStatus');
+let faceDescriptorField = document.getElementById('faceDescriptor');
+let stream = null;
+let isModelLoaded = false;
+
+async function loadModels() {
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+    await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
+    isModelLoaded = true;
+}
+
+async function startCamera() {
+    if (stream) return;
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+        video.srcObject = stream;
+        video.style.display = '';
+        overlay.style.display = '';
+        startBtn.disabled = true;
+        captureBtn.disabled = false;
+        faceStatus.textContent = 'Camera started. Position face in the frame and click Capture.';
+    } catch (err) {
+        faceStatus.textContent = 'Error accessing camera.';
+    }
+}
+
+async function captureFace() {
+    if (!isModelLoaded) {
+        faceStatus.textContent = 'Loading face detection models...';
+        await loadModels();
+    }
+    overlay.width = video.videoWidth;
+    overlay.height = video.videoHeight;
+    const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();
+    const ctx = overlay.getContext('2d');
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    if (detection && detection.descriptor) {
+        faceStatus.textContent = 'Face captured! Descriptor filled.';
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 2;
+        const box = detection.detection.box;
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+        faceDescriptorField.value = JSON.stringify(Array.from(detection.descriptor));
+    } else {
+        faceStatus.textContent = 'No face detected. Try again.';
+    }
+}
+
+startBtn.addEventListener('click', startCamera);
+captureBtn.addEventListener('click', captureFace);
+</script>
